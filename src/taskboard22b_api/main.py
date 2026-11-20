@@ -13,6 +13,8 @@ from pydantic import BaseModel
 from . import __version__
 from .logging_config import configure_logging
 from .metrics import MetricsMiddleware
+from .tasks import InMemoryTaskStore
+from .tasks import router as tasks_router
 from .tracing import configure_tracing, tracing_enabled
 
 configure_logging(level=os.environ.get("LOG_LEVEL", "INFO"))
@@ -20,6 +22,8 @@ if tracing_enabled():
     configure_tracing()
 
 app = FastAPI(title="taskboard22b-api", version=__version__)
+app.state.task_store = InMemoryTaskStore()
+app.include_router(tasks_router)
 app.add_middleware(MetricsMiddleware)
 if tracing_enabled():
     FastAPIInstrumentor.instrument_app(app)
