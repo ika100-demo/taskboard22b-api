@@ -107,7 +107,8 @@ class PostgresTaskStore:
                 ).fetchone()
         except psycopg.OperationalError as exc:
             raise self._unavailable("add", exc) from exc
-        assert inserted is not None
+        if inserted is None:
+            raise self._unavailable("add", RuntimeError("insert returned no row"))
         return _to_task(inserted)
 
     def list(self) -> builtins.list[Task]:

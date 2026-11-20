@@ -8,7 +8,9 @@ import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from .models import Task, TaskCreate
-from .store import MAX_TASKS, TaskLimitReachedError, TaskStore
+from .store import MAX_TASKS, TaskLimitReachedError, TaskStore, TaskStoreUnavailableError
+
+UNAVAILABLE_DETAIL = "Tasks are temporarily unavailable"
 
 router = APIRouter()
 log = structlog.get_logger()
@@ -29,10 +31,15 @@ def create_task(body: TaskCreate, store: StoreDep) -> Task:
     except TaskLimitReachedError:
         log.warning("task_limit_reached", limit=MAX_TASKS)
         raise HTTPException(status_code=507, detail=f"Task limit of {MAX_TASKS} reached") from None
+    except TaskStoreUnavailableError:
+        raise HTTPException(status_code=503, detail=UNAVAILABLE_DETAIL) from None
     log.info("task_created", task_id=task.id)
     return task
 
 
 @router.get("/tasks", response_model=list[Task])
 def list_tasks(store: StoreDep) -> list[Task]:
-    return store.list()
+    try:
+        return store.list()
+    except TaskStoreUnavailableError:
+        raise HTTPException(status_code=503, detail=UNAVAILABLE_DETAIL) from None
