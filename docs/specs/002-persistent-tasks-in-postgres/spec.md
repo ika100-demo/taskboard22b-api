@@ -1,7 +1,7 @@
 ---
 spec_id: 002-persistent-tasks-in-postgres
 title: Persistent tasks in Postgres
-status: building
+status: done
 priority: P1
 shape: service-python
 parent: ika100-demo/taskboard22b-gitops:001-persistent-tasks-in-postgres-with-a-web
@@ -142,3 +142,4 @@ Ordering oldest first must stay stable for equal created_at (insertion order, e.
 - 2026-11-20 created from the system plan, with its criteria (spec 147)
 - 2026-11-20 approved
 - 2026-11-20 building
+- 2026-11-20 done
