@@ -151,6 +151,10 @@ class Forwarder:
             listener, self._listener = self._listener, None
             sockets, self._sockets = self._sockets, []
         if listener is not None:
+            try:  # on Linux close() alone leaves a blocked accept() listening
+                listener.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
             listener.close()
         for sock in sockets:
             try:
