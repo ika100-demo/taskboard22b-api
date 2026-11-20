@@ -149,16 +149,6 @@ def test_invalid_due_422(client: TestClient, use_store: Any, due: object) -> Non
     assert listed.json() == []
 
 
-def test_restart_yields_empty_list(client: TestClient, use_store: Any) -> None:  # AC-001.6
-    use_store()
-    assert client.post("/tasks", json={"title": "Buy milk"}).status_code == 201
-    assert len(client.get("/tasks").json()) == 1
-    use_store()  # a fresh store simulates a restart
-    after = client.get("/tasks")
-    assert after.status_code == 200
-    assert after.json() == []
-
-
 def test_task_limit_returns_507(client: TestClient, use_store: Any) -> None:  # AC-001.7
     store = use_store()
     from taskboard22b_api.tasks.store import MAX_TASKS

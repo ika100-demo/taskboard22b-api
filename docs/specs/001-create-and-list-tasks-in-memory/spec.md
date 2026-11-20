@@ -25,7 +25,7 @@ As a taskboard user, I want to list all tasks I have created, so that I can see 
 - **AC-001.3** Given tasks were created on the running service, when a client sends `GET /tasks`, then the response is `200` with a JSON array of all tasks in the same shape as AC-001.1, ordered by creation time oldest first, each with the values it was created with. (smoke)
 - **AC-001.4** Given a running service, when a client sends `POST /tasks` with `title` missing, not a string, empty, only whitespace, or longer than 200 characters after trimming leading and trailing whitespace, then the response is `422` naming the field `title`, and `GET /tasks` does not contain a new task.
 - **AC-001.5** Given a running service, when a client sends `POST /tasks` with a valid title and a `due_date` that is not a real calendar date in the form `YYYY-MM-DD` (for example `"24.12.2026"`, `"2026-02-30"` or `"2026-12-24T10:00:00Z"`), then the response is `422` naming the field `due_date`, and no task is created.
-- **AC-001.6** Given tasks were created, when the service restarts, then `GET /tasks` returns `200` with an empty array `[]`.
+- ~~**AC-001.6**~~ superseded by AC-002.1 on 2026-11-20: Given tasks were created, when the service restarts, then `GET /tasks` returns `200` with an empty array `[]`.
 - **AC-001.7** Given the service already holds 10,000 tasks, when a client sends a valid `POST /tasks`, then the response is `507` with a message that the task limit is reached, and the task count stays at 10,000.
 
 ## Non-goals
@@ -66,3 +66,4 @@ As a taskboard user, I want to list all tasks I have created, so that I can see 
 - 2026-11-20 approved
 - 2026-11-20 building
 - 2026-11-20 done
+- 2026-11-20 AC-001.6 superseded by AC-002.1
