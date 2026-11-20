@@ -88,18 +88,18 @@ def test_tasks_survive_restart(new_database: Any) -> None:  # AC-002.1
 
 
 def test_empty_database_gets_schema_and_lists_empty(
-    make_app: Any, new_database: Any
+    new_database: Any, make_app: Any
 ) -> None:  # AC-002.2
     url = new_database()
     client = make_app(url)
+    assert _count(url) == 0  # the schema exists right after start, before any request
     response = client.get("/tasks")
     assert response.status_code == 200
     assert response.json() == []
-    assert _count(url) == 0  # the table exists now
 
 
 def test_two_instances_starting_together_share_schema(
-    make_app: Any, new_database: Any
+    new_database: Any, make_app: Any
 ) -> None:  # AC-002.2
     url = new_database()
     with ThreadPoolExecutor(2) as pool:
@@ -109,7 +109,7 @@ def test_two_instances_starting_together_share_schema(
 
 
 def test_task_created_on_one_instance_visible_on_other(
-    make_app: Any, new_database: Any
+    new_database: Any, make_app: Any
 ) -> None:  # AC-002.3
     url = new_database()
     a = make_app(url)
@@ -125,7 +125,7 @@ def test_task_created_on_one_instance_visible_on_other(
 
 
 def test_limit_507_with_10000_tasks_across_instances(
-    make_app: Any, new_database: Any
+    new_database: Any, make_app: Any
 ) -> None:  # AC-002.4
     url = new_database()
     a = make_app(url)
@@ -147,7 +147,7 @@ def test_limit_507_with_10000_tasks_across_instances(
 
 
 def test_limit_never_exceeded_by_concurrent_instances(
-    make_app: Any, new_database: Any
+    new_database: Any, make_app: Any
 ) -> None:  # AC-002.4
     url = new_database()
     a = make_app(url)
@@ -166,7 +166,7 @@ def test_limit_never_exceeded_by_concurrent_instances(
 
 
 def test_database_unreachable_answers_503(
-    make_app: Any, new_database: Any, forward_database: Any
+    new_database: Any, forward_database: Any, make_app: Any
 ) -> None:  # AC-002.5
     url, forwarder = forward_database(new_database())
     client = make_app(url)
@@ -196,7 +196,7 @@ def test_database_unreachable_answers_503(
 
 
 def test_service_started_with_database_down_answers_503(
-    make_app: Any, new_database: Any, forward_database: Any
+    new_database: Any, forward_database: Any, make_app: Any
 ) -> None:  # AC-002.5
     url, forwarder = forward_database(new_database())
     forwarder.cut()
@@ -211,7 +211,7 @@ def test_service_started_with_database_down_answers_503(
 
 
 def test_recovery_without_restart(
-    make_app: Any, new_database: Any, forward_database: Any
+    new_database: Any, forward_database: Any, make_app: Any
 ) -> None:  # AC-002.6
     url, forwarder = forward_database(new_database())
     client = make_app(url)
@@ -230,7 +230,7 @@ def test_recovery_without_restart(
 
 
 def test_recovery_when_started_with_database_down(
-    make_app: Any, new_database: Any, forward_database: Any
+    new_database: Any, forward_database: Any, make_app: Any
 ) -> None:  # AC-002.6
     url, forwarder = forward_database(new_database())
     forwarder.cut()

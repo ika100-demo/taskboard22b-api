@@ -20,7 +20,8 @@ def _request(base: str, method: str, path: str, body: dict | None = None) -> tup
 
 
 @pytest.mark.smoke
-def test_smoke_ready_and_list_reach_database(smoke_base_url: str) -> None:  # AC-002.1
+def test_smoke_ready_and_list_reach_database(smoke_base_url: str) -> None:
+    # read-only: the database is reachable
     status, ready = _request(smoke_base_url, "GET", "/ready")
     assert status == 200
     assert ready == {"status": "ready"}
@@ -33,7 +34,8 @@ def test_smoke_ready_and_list_reach_database(smoke_base_url: str) -> None:  # AC
 @pytest.mark.writes
 def test_smoke_created_task_is_stable_across_replicas(smoke_base_url: str) -> None:  # AC-002.3
     title = f"smoke-{uuid.uuid4()}"
-    _, created = _request(smoke_base_url, "POST", "/tasks", {"title": title})
+    payload = {"title": title, "due_date": "2030-01-02"}
+    _, created = _request(smoke_base_url, "POST", "/tasks", payload)
     for _ in range(6):  # requests land on both replicas through the Service
         status, body = _request(smoke_base_url, "GET", "/tasks")
         assert status == 200
@@ -41,3 +43,4 @@ def test_smoke_created_task_is_stable_across_replicas(smoke_base_url: str) -> No
         assert len(found) == 1
         assert found[0]["created_at"] == created["created_at"]
         assert found[0]["title"] == title
+        assert found[0]["due_date"] == created["due_date"] == "2030-01-02"
