@@ -99,6 +99,7 @@ def test_list_oldest_first(client: TestClient, use_store: Any) -> None:  # AC-00
     assert [t["title"] for t in body] == ["one", "two", "three"]
     assert [t["due_date"] for t in body] == ["2026-12-24", None, "2027-01-01"]
     assert [t["id"] for t in body] == [t["id"] for t in created]
+    assert body == created
     for task in body:
         _assert_task_shape(task)
 
@@ -167,7 +168,7 @@ def test_task_limit_returns_507(client: TestClient, use_store: Any) -> None:  # 
         store.add(f"t{i}", None)
     response = client.post("/tasks", json={"title": "one too many"})
     assert response.status_code == 507
-    assert "limit" in str(response.json()["detail"]).lower()
+    assert response.json() == {"detail": "Task limit of 10000 reached"}
     listed = client.get("/tasks")
     assert listed.status_code == 200
     assert len(listed.json()) == MAX_TASKS
