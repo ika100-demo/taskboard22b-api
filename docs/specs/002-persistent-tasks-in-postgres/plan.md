@@ -10,6 +10,7 @@ tasks:
     covers: [AC-002.1, AC-002.2, AC-002.3, AC-002.4, AC-002.5, AC-002.6]
     parallel_safe: true
     depends_on: []
+    done: true
   - id: t2
     title: Wire the Postgres store into the app (create_app, lifespan, 503 mapping, database-backed /ready)
     files: [src/taskboard22b_api/tasks/api.py, src/taskboard22b_api/tasks/__init__.py, src/taskboard22b_api/main.py, tests/test_health.py, docs/env-vars.md]

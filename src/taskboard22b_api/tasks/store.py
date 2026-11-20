@@ -17,12 +17,18 @@ class TaskLimitReachedError(Exception):
     """Raised when the store already holds the maximum number of tasks."""
 
 
+class TaskStoreUnavailableError(Exception):
+    """Raised when the database cannot be used right now."""
+
+
 class TaskStore(Protocol):
     def add(self, title: str, due_date: date | None) -> Task: ...
 
     def list(self) -> builtins.list[Task]: ...
 
     def count(self) -> int: ...
+
+    def ping(self, timeout: float = 1.0) -> bool: ...
 
 
 class InMemoryTaskStore:
@@ -53,3 +59,6 @@ class InMemoryTaskStore:
     def count(self) -> int:
         with self._lock:
             return len(self._tasks)
+
+    def ping(self, timeout: float = 1.0) -> bool:
+        return True
